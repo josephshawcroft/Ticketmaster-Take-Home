@@ -18,7 +18,9 @@ android {
         versionName = "1.0"
 
         val apiKey: String by properties
+        val baseUrl: String by properties
         buildConfigField("String", "API_KEY", "\"${apiKey}\"")
+        buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -36,11 +38,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         buildConfig = true
