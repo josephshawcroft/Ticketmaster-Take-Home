@@ -1,8 +1,10 @@
 package com.shawcroftstudios.ticketmastertakehome.domain.usecase
 
+import com.shawcroftstudios.ticketmastertakehome.data.DataLoadingResult
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
+import kotlinx.coroutines.flow.Flow
 
 interface GetEventsForCityUsecase {
 
-    suspend fun execute(cityName: String): Result<List<Event>>
+    fun execute(cityName: String): Flow<DataLoadingResult<List<Event>>>
 }

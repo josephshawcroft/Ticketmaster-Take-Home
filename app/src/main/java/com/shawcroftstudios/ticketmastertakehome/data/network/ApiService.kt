@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface ApiService {
     @GET("events.json?")
-    suspend fun fetchEventsByCity(
+    suspend fun fetchEventsForCity(
         @Query("city") name: String,
     ): Response<EventsResponse>
 }

@@ -36,7 +36,7 @@ fun EventList(state: State<EventListUiState>) {
             )
         }
     } else if (errorMessage != null) {
-        Text(text = errorMessage, color = Color.White)
+        Text(text = errorMessage, color = Color.Black)
     } else {
         DisplayEventItems(eventItems = filteredEventItems)
     }

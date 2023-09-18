@@ -1,7 +1,7 @@
 package com.shawcroftstudios.ticketmastertakehome.di
 
 import com.shawcroftstudios.ticketmastertakehome.BuildConfig
-import com.shawcroftstudios.ticketmastertakehome.data.network.ApiClient
+import com.shawcroftstudios.ticketmastertakehome.data.network.EventApi
 import com.shawcroftstudios.ticketmastertakehome.data.network.ApiKeyInterceptor
 import dagger.Module
 import dagger.Provides
@@ -40,5 +40,5 @@ object NetworkModule {
     }
 
     @Provides
-    fun provideApiClient(retrofit: Retrofit): ApiClient = ApiClient(retrofit)
+    fun provideApiClient(retrofit: Retrofit): EventApi = EventApi(retrofit)
 }

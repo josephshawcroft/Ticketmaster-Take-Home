@@ -18,6 +18,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -26,15 +30,15 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.shawcroftstudios.ticketmastertakehome.ui.viewmodel.EventListViewModel
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar(viewModel: EventListViewModel) {
+fun SearchBar(onQueryChange: (String) -> Unit = { }) {
 
-    val query = viewModel.searchQuery.value
+    var query by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -62,7 +66,8 @@ fun SearchBar(viewModel: EventListViewModel) {
                     singleLine = true,
                     value = query,
                     onValueChange = {
-                        viewModel.updateSearchQuery(it)
+                        query = it
+                        onQueryChange(it)
                     },
                     modifier = Modifier
                         .testTag("TEXT_FIELD_TEXT_TAG")
@@ -80,7 +85,8 @@ fun SearchBar(viewModel: EventListViewModel) {
                                 contentDescription = "clear text",
                                 modifier = Modifier
                                     .clickable {
-                                        viewModel.updateSearchQuery("")
+                                        query = ""
+                                        onQueryChange("")
                                         focusManager.clearFocus()
                                         keyboardController?.hide()
                                     }
@@ -93,6 +99,8 @@ fun SearchBar(viewModel: EventListViewModel) {
     }
 }
 
-//@Preview
-//@Composable
-//fun Preview() = SearchBar()
+@Preview
+@Composable
+fun SearchBarPreview() {
+    SearchBar()
+}

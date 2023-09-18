@@ -70,16 +70,22 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
+    val roomVersion = "2.5.2"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    //noinspection KaptUsageInsteadOfKsp
+    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    testImplementation("androidx.room:room-testing:$roomVersion")
+
     // DI
     implementation("com.google.dagger:hilt-android:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("androidx.room:room-common:2.5.2")
-    implementation("androidx.room:room-ktx:2.5.2")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     implementation("com.google.dagger:hilt-android-gradle-plugin:2.44")
 
     // Network
-    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("com.google.code.gson:gson:2.9.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Ticketmaster Take Home</string>
+
+    <string name="date_not_available">Date not available</string>
 </resources>

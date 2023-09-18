@@ -4,10 +4,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.shawcroftstudios.ticketmastertakehome.data.DataLoadingResult
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
 import com.shawcroftstudios.ticketmastertakehome.domain.usecase.GetEventsForCityUsecase
 import com.shawcroftstudios.ticketmastertakehome.utils.DispatcherProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,16 +28,25 @@ class EventListViewModel @Inject constructor(
     val eventListUiState: State<EventListUiState> get() = _eventListUiState
 
     private val _searchQuery = mutableStateOf("")
-    val searchQuery: State<String> = _searchQuery
 
     fun fetchEventsForCity(city: String) {
-        _eventListUiState.value = EventListUiState(isLoading = true)
         viewModelScope.launch {
-            val result = usecase.execute(city)
-            val response = result.getOrNull()
-            _eventListUiState.value =
-                EventListUiState(isLoading = false, eventItems = response.orEmpty())
-            updateFilteredEvents(_searchQuery.value) // force the filtering based on what's currently in the search bar
+            val useCaseFlow = usecase.execute(city)
+
+            useCaseFlow.collectLatest { result ->
+                val state = when (result) {
+                    is DataLoadingResult.Success -> {
+                        EventListUiState(isLoading = false, eventItems = result.data)
+                    }
+                    is DataLoadingResult.Loading -> EventListUiState(isLoading = true)
+                    is DataLoadingResult.Error -> EventListUiState(
+                        isLoading = false,
+                        errorMessage = result.errorMessage
+                    )
+                }
+                _eventListUiState.value = state
+                if (result is DataLoadingResult.Success) updateFilteredEvents(_searchQuery.value)
+            }
         }
     }
 
@@ -44,6 +55,7 @@ class EventListViewModel @Inject constructor(
         updateFilteredEvents(query)
     }
 
+    // todo consider doing updateFilteredEvents on background thread
     private fun updateFilteredEvents(query: String) {
         val eventListUiState = _eventListUiState.value
         val events = eventListUiState.eventItems
