@@ -3,8 +3,8 @@ package com.shawcroftstudios.ticketmastertakehome.data.repository
 import com.shawcroftstudios.ticketmastertakehome.data.DataLoadingResult
 import com.shawcroftstudios.ticketmastertakehome.data.database.EventDao
 import com.shawcroftstudios.ticketmastertakehome.data.mapper.EventMapper
-import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
 import com.shawcroftstudios.ticketmastertakehome.data.network.EventApi
+import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
 import com.shawcroftstudios.ticketmastertakehome.utils.DispatcherProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -31,6 +31,7 @@ class EventListRepositoryImpl @Inject constructor(
             }
         }.flowOn(dispatcherProvider.io)
     }
+
     private fun fetchLocalEventsForCity(city: String) = flow {
         val localEvents = eventDao.getEventsForCity(city)
         if (localEvents.isNotEmpty()) {
@@ -40,12 +41,17 @@ class EventListRepositoryImpl @Inject constructor(
 
     private fun fetchRemoteEventsForCity(city: String) = flow {
         val response = eventApi.fetchEventsForCity(city)
-        val body = response.body()
-
-        if (response.isSuccessful && body != null) {
-            val events = eventMapper.mapToDomain(body)
+        val data = response.getOrNull()
+        if (response.isSuccess && data != null) {
+            val events = eventMapper.mapToDomain(data)
             eventDao.insertAll(events)
             emit(DataLoadingResult.Success(events))
-        } else emit(DataLoadingResult.Error(response.message()))
+        } else {
+            emit(DataLoadingResult.Error(response.exceptionOrNull()?.message ?: UNKNOWN_ERROR))
+        }
+    }
+
+    private companion object {
+        private const val UNKNOWN_ERROR = "An unknown error has occurred"
     }
 }
