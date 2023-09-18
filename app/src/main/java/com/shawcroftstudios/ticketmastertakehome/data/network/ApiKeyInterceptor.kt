@@ -1,4 +1,4 @@
-package com.shawcroftstudios.ticketmastertakehome.network
+package com.shawcroftstudios.ticketmastertakehome.data.network
 
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -7,7 +7,7 @@ class ApiKeyInterceptor(private val apiKey: String) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
 
         val originalRequest = chain.request()
-        val modifiedUrl = originalRequest.url().newBuilder()
+        val modifiedUrl = originalRequest.url.newBuilder()
             .addQueryParameter(API_KEY, apiKey)
             .build()
 
@@ -20,6 +20,6 @@ class ApiKeyInterceptor(private val apiKey: String) : Interceptor {
 
     private companion object {
 
-        private const val API_KEY = "apiKey"
+        private const val API_KEY = "apikey"
     }
 }
