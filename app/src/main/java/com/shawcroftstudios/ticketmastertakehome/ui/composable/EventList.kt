@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -23,16 +24,22 @@ import com.shawcroftstudios.ticketmastertakehome.ui.viewmodel.EventListUiState
 @Composable
 fun EventList(state: State<EventListUiState>) {
     val eventListUiState = state.value
-    val eventItems = eventListUiState.eventItems
+    val filteredEventItems = eventListUiState.filteredEventItems
     val isLoading = eventListUiState.isLoading
     val errorMessage = eventListUiState.errorMessage
 
-    if (isLoading) CircularProgressIndicator(modifier = Modifier.fillMaxSize(), color = Color.White)
-    else if (errorMessage != null) {
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                color = Color.Black,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    } else if (errorMessage != null) {
         Text(text = errorMessage, color = Color.White)
+    } else {
+        DisplayEventItems(eventItems = filteredEventItems)
     }
-
-    DisplayEventItems(eventItems = eventItems)
 }
 
 @Composable
@@ -50,7 +57,7 @@ fun DisplayEventItems(eventItems: List<Event>) {
     ) {
         LazyColumn {
             item {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
             }
             items(
                 eventItems.size
