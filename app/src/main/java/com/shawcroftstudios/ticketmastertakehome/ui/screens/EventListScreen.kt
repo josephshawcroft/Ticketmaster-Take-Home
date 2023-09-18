@@ -18,7 +18,9 @@ fun EventListScreen(viewModelStoreOwner: ViewModelStoreOwner) {
         SearchBar { latestQuery ->
             viewModel.updateSearchQuery(latestQuery)
         }
-        EventList(state = viewModel.eventListUiState)
+        EventList(uiState = viewModel.eventListUiState) {
+            viewModel.fetchEventsForCity(HARDCODED_CITY) // pull to refresh callback
+        }
     }
 
     LaunchedEffect(Unit) {

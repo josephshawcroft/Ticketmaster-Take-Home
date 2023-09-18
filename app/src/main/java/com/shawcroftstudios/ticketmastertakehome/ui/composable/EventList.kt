@@ -9,45 +9,45 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
 import com.shawcroftstudios.ticketmastertakehome.ui.viewmodel.EventListUiState
 
+/**
+ *     Rather crude 'pull to refresh' implementation- given more time I'd flesh this out so that refresh state
+ *     is based on VM loading state. Wanted to have it in anyway as it's nicer UX and a pretty cool
+ *     Compose feature
+ */
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun EventList(state: State<EventListUiState>) {
-    val eventListUiState = state.value
-    val filteredEventItems = eventListUiState.filteredEventItems
-    val isLoading = eventListUiState.isLoading
-    val errorMessage = eventListUiState.errorMessageResourceId?.let { stringResource(id = it) }
-
-    if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(
-                color = Color.Black,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    } else if (errorMessage != null) {
-        Text(text = errorMessage, color = Color.Black)
-    } else {
-        DisplayEventItems(eventItems = filteredEventItems)
-    }
-}
-
-@Composable
-fun DisplayEventItems(eventItems: List<Event>) {
+fun EventList(uiState: State<EventListUiState>, onPullRefresh: () -> Unit) {
     val density = LocalDensity.current
+    val filteredEventItems = uiState.value.filteredEventItems
+
+    var refreshing by remember { mutableStateOf(false) }
+
+    refreshing = uiState.value.isLoading
+    val state = rememberPullRefreshState(refreshing, onPullRefresh)
+
+    val errorMessage = uiState.value.errorMessageResourceId?.let { stringResource(id = it) }
+
     AnimatedVisibility(
-        visible = eventItems.isNotEmpty(),
+        visible = filteredEventItems.isNotEmpty(),
         enter = slideInVertically {
             with(density) { -20.dp.roundToPx() }
         } + expandVertically(
@@ -56,16 +56,26 @@ fun DisplayEventItems(eventItems: List<Event>) {
             initialAlpha = 0.3f
         )
     ) {
-        LazyColumn {
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
+        Box(
+            Modifier.pullRefresh(state)
+        ) {
+            // TODO investigate why error messages have stopped appearing
+            if (errorMessage != null) {
+                Text(text = errorMessage, color = Color.Black)
+            } else LazyColumn(Modifier.fillMaxSize()) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+                if (!refreshing) {
+                    items(
+                        filteredEventItems.size
+                    ) { index ->
+                        EventItem(filteredEventItems[index])
+                        Spacer(Modifier.height(8.dp))
+                    }
+                }
             }
-            items(
-                eventItems.size
-            ) { index ->
-                EventItem(eventItems[index])
-                Spacer(Modifier.height(16.dp))
-            }
+            PullRefreshIndicator(refreshing, state, Modifier.align(Alignment.TopCenter))
         }
     }
 }

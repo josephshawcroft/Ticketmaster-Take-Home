@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class Event(
     @PrimaryKey val id: String,
     val name: String,
-    val city: String = "Nottingham",
+    val city: String?,
+    val venueName: String?,
     val imageUrl: String?,
 )

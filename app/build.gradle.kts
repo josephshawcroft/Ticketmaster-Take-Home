@@ -69,6 +69,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-android:1.5.1")
 
     val roomVersion = "2.5.2"
     implementation("androidx.room:room-runtime:$roomVersion")

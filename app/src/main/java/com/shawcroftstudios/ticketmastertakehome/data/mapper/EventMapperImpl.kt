@@ -12,10 +12,12 @@ class EventMapperImpl @Inject constructor() : EventMapper {
         return events.mapNotNull {
             val id = it.id
             val name = it.name
-//            val city = it.city TODO
+            val venue = it.embedded?.venues?.firstOrNull()
+            val venueName = venue?.name
+            val city = venue?.city?.name
 
             if (id != null && name != null) {
-                Event(id, name, "Nottingham", it.images?.firstOrNull()?.url)
+                Event(id, name, city, venueName, it.images?.firstOrNull()?.url)
             } else null
         }
     }

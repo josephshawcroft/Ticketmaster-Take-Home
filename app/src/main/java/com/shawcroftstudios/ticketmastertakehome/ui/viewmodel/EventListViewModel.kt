@@ -25,7 +25,7 @@ class EventListViewModel @Inject constructor(
 
     private val _eventListUiState = mutableStateOf(
         EventListUiState(
-            isLoading = false,
+            isLoading = true,
             eventItems = emptyList(),
         )
     )
@@ -43,7 +43,6 @@ class EventListViewModel @Inject constructor(
                     is DataLoadingResult.Success -> {
                         EventListUiState(isLoading = false, eventItems = result.data)
                     }
-
                     is DataLoadingResult.Loading -> EventListUiState(isLoading = true)
                     is DataLoadingResult.Error -> EventListUiState(
                         isLoading = false,
