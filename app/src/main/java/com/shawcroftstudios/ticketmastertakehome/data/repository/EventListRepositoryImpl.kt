@@ -1,7 +1,9 @@
 package com.shawcroftstudios.ticketmastertakehome.data.repository
 
+import androidx.annotation.VisibleForTesting
 import com.shawcroftstudios.ticketmastertakehome.data.DataLoadingResult
 import com.shawcroftstudios.ticketmastertakehome.data.database.EventDao
+import com.shawcroftstudios.ticketmastertakehome.data.exception.NoAvailableEventsException
 import com.shawcroftstudios.ticketmastertakehome.data.mapper.EventMapper
 import com.shawcroftstudios.ticketmastertakehome.data.network.EventApi
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
@@ -26,32 +28,34 @@ class EventListRepositoryImpl @Inject constructor(
         return combine(localData, remoteData) { localResult, remoteResult ->
             if (remoteResult is DataLoadingResult.Success && remoteResult.data.isNotEmpty()) {
                 remoteResult
+            } else if (localResult is DataLoadingResult.Error && remoteResult is DataLoadingResult.Loading) {
+                DataLoadingResult.Loading // if local DB has errored but remote is still loading, show spinner
             } else {
-                localResult
+                localResult // otherwise fallback to local DB
             }
         }.flowOn(dispatcherProvider.io)
     }
 
-    private fun fetchLocalEventsForCity(city: String) = flow {
+    @VisibleForTesting
+    fun fetchLocalEventsForCity(city: String) = flow {
+        emit(DataLoadingResult.Loading)
         val localEvents = eventDao.getEventsForCity(city)
         if (localEvents.isNotEmpty()) {
             emit(DataLoadingResult.Success(localEvents))
-        } else emit(DataLoadingResult.Loading())
+        } else emit(DataLoadingResult.Error(NoAvailableEventsException()))
     }
 
-    private fun fetchRemoteEventsForCity(city: String) = flow {
+    @VisibleForTesting
+    fun fetchRemoteEventsForCity(city: String) = flow {
+        emit(DataLoadingResult.Loading)
         val response = eventApi.fetchEventsForCity(city)
         val data = response.getOrNull()
         if (response.isSuccess && data != null) {
             val events = eventMapper.mapToDomain(data)
-            eventDao.insertAll(events)
             emit(DataLoadingResult.Success(events))
+            eventDao.insertAll(events)
         } else {
-            emit(DataLoadingResult.Error(response.exceptionOrNull()?.message ?: UNKNOWN_ERROR))
+            emit(DataLoadingResult.Error(response.exceptionOrNull() ?: NoAvailableEventsException()))
         }
-    }
-
-    private companion object {
-        private const val UNKNOWN_ERROR = "An unknown error has occurred"
     }
 }

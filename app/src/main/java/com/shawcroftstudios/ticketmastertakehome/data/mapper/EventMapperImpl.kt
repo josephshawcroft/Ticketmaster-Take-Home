@@ -15,7 +15,7 @@ class EventMapperImpl @Inject constructor() : EventMapper {
 //            val city = it.city TODO
 
             if (id != null && name != null) {
-                Event(id, name, "Nottingham", it.dates?.start?.localDate, it.images?.firstOrNull()?.url)
+                Event(id, name, "Nottingham", it.images?.firstOrNull()?.url)
             } else null
         }
     }

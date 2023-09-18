@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
 import com.shawcroftstudios.ticketmastertakehome.ui.viewmodel.EventListUiState
@@ -26,7 +27,7 @@ fun EventList(state: State<EventListUiState>) {
     val eventListUiState = state.value
     val filteredEventItems = eventListUiState.filteredEventItems
     val isLoading = eventListUiState.isLoading
-    val errorMessage = eventListUiState.errorMessage
+    val errorMessage = eventListUiState.errorMessageResourceId?.let { stringResource(id = it) }
 
     if (isLoading) {
         Box(modifier = Modifier.fillMaxSize()) {

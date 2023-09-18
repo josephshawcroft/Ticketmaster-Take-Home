@@ -8,6 +8,5 @@ data class Event(
     @PrimaryKey val id: String,
     val name: String,
     val city: String = "Nottingham",
-    val date: String?,
     val imageUrl: String?,
 )

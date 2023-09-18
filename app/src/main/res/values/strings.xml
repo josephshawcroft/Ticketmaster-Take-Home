@@ -2,4 +2,7 @@
     <string name="app_name">Ticketmaster Take Home</string>
 
     <string name="date_not_available">Date not available</string>
+    <string name="no_events_available_to_show_at_this_time">No events available to show at this time. Please try again later</string>
+    <string name="no_internet_connection">No internet connection available. Please try again later</string>
+    <string name="unknown_error_has_occurred">An unknown error has occurred. Please try again later</string>
 </resources>

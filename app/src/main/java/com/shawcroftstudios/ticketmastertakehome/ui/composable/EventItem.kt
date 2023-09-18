@@ -19,13 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.shawcroftstudios.ticketmastertakehome.R
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
 
 @Composable
@@ -64,7 +62,7 @@ fun EventItem(event: Event) {
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
-                    text = event.date ?: stringResource(R.string.date_not_available),
+                    text = event.city,
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -80,7 +78,6 @@ fun EventItemPreview() = EventItem(
         "1",
         "Slayer @ Motorpoint Arena",
         "Nottingham",
-        null,
         null,
     )
 )

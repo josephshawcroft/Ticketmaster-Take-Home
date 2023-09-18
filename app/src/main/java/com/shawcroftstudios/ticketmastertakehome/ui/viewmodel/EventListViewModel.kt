@@ -1,10 +1,14 @@
 package com.shawcroftstudios.ticketmastertakehome.ui.viewmodel
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.shawcroftstudios.ticketmastertakehome.R
 import com.shawcroftstudios.ticketmastertakehome.data.DataLoadingResult
+import com.shawcroftstudios.ticketmastertakehome.data.exception.NoAvailableEventsException
+import com.shawcroftstudios.ticketmastertakehome.data.exception.NoInternetException
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
 import com.shawcroftstudios.ticketmastertakehome.domain.usecase.GetEventsForCityUsecase
 import com.shawcroftstudios.ticketmastertakehome.utils.DispatcherProvider
@@ -31,6 +35,7 @@ class EventListViewModel @Inject constructor(
 
     fun fetchEventsForCity(city: String) {
         viewModelScope.launch {
+
             val useCaseFlow = usecase.execute(city)
 
             useCaseFlow.collectLatest { result ->
@@ -38,10 +43,11 @@ class EventListViewModel @Inject constructor(
                     is DataLoadingResult.Success -> {
                         EventListUiState(isLoading = false, eventItems = result.data)
                     }
+
                     is DataLoadingResult.Loading -> EventListUiState(isLoading = true)
                     is DataLoadingResult.Error -> EventListUiState(
                         isLoading = false,
-                        errorMessage = result.errorMessage
+                        errorMessageResourceId = handleException(result.exception)
                     )
                 }
                 _eventListUiState.value = state
@@ -55,25 +61,33 @@ class EventListViewModel @Inject constructor(
         updateFilteredEvents(query)
     }
 
-    // todo consider doing updateFilteredEvents on background thread
     private fun updateFilteredEvents(query: String) {
-        val eventListUiState = _eventListUiState.value
-        val events = eventListUiState.eventItems
+        viewModelScope.launch(dispatcher.io) {
+            val eventListUiState = _eventListUiState.value
+            val events = eventListUiState.eventItems
 
-        val filteredEvents = if (query.isBlank()) {
-            events
-        } else {
-            events.filter { it.name.contains(query) }
+            val filteredEvents = if (query.isBlank()) {
+                events
+            } else {
+                events.filter { it.name.contains(query) }
+            }
+
+            _eventListUiState.value = eventListUiState.copy(filteredEventItems = filteredEvents)
         }
-
-        _eventListUiState.value = eventListUiState.copy(filteredEventItems = filteredEvents)
     }
 
+    @StringRes
+    private fun handleException(throwable: Throwable): Int =
+        when (throwable) {
+            is NoAvailableEventsException -> R.string.no_events_available_to_show_at_this_time
+            is NoInternetException -> R.string.no_internet_connection
+            else -> R.string.unknown_error_has_occurred
+        }
 }
 
 data class EventListUiState(
     val isLoading: Boolean = false,
     val eventItems: List<Event> = emptyList(),
     val filteredEventItems: List<Event> = emptyList(),
-    val errorMessage: String? = null,
+    val errorMessageResourceId: Int? = null,
 )
