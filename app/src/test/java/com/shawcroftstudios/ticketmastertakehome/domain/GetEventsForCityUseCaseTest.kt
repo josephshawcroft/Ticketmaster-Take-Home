@@ -14,6 +14,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
@@ -69,6 +70,7 @@ class GetEventsForCityUseCaseTest {
             }
 
             coVerify(exactly = 1) { localRepository.insertEvents(remoteTestEvents) }
+            verify(exactly = 1) { dispatcherProvider.io }
         }
 
     // a successful empty remote response should have generally priority over a successful local response- indicative of stale data
@@ -110,6 +112,7 @@ class GetEventsForCityUseCaseTest {
             }
 
             coVerify(exactly = 0) { localRepository.insertEvents(remoteTestEvents) }
+            verify(exactly = 1) { dispatcherProvider.io }
         }
 
     @Test
@@ -141,6 +144,7 @@ class GetEventsForCityUseCaseTest {
             }
 
             coVerify(exactly = 1) { localRepository.insertEvents(remoteTestEvents) }
+            verify(exactly = 1) { dispatcherProvider.io }
         }
 
     @Test
@@ -171,6 +175,7 @@ class GetEventsForCityUseCaseTest {
             }
 
             coVerify(exactly = 0) { localRepository.insertEvents(any()) }
+            verify(exactly = 1) { dispatcherProvider.io }
         }
 
     @Test
@@ -190,5 +195,6 @@ class GetEventsForCityUseCaseTest {
             }
 
             coVerify(exactly = 0) { localRepository.insertEvents(any()) }
+            verify(exactly = 1) { dispatcherProvider.io }
         }
 }

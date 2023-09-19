@@ -34,7 +34,7 @@ fun EventItem(event: Event) {
         modifier = Modifier
             .testTag("CARD_ITEM_TEXT_TAG")
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(4.dp),
         elevation = CardDefaults.cardElevation(8.dp),
         shape = RoundedCornerShape(16.dp)
     ) {

@@ -47,7 +47,7 @@ fun EventList(uiState: State<EventListUiState>, onPullRefresh: () -> Unit) {
     val errorMessage = uiState.value.errorMessageResourceId?.let { stringResource(id = it) }
 
     AnimatedVisibility(
-        visible = filteredEventItems.isNotEmpty(),
+        visible = filteredEventItems.isNotEmpty() || errorMessage != null,
         enter = slideInVertically {
             with(density) { -20.dp.roundToPx() }
         } + expandVertically(
@@ -59,20 +59,17 @@ fun EventList(uiState: State<EventListUiState>, onPullRefresh: () -> Unit) {
         Box(
             Modifier.pullRefresh(state)
         ) {
-            // TODO investigate why error messages have stopped appearing
-            if (errorMessage != null) {
-                Text(text = errorMessage, color = Color.Black)
-            } else LazyColumn(Modifier.fillMaxSize()) {
+            LazyColumn(Modifier.fillMaxSize()) {
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-                if (!refreshing) {
-                    items(
-                        filteredEventItems.size
-                    ) { index ->
-                        EventItem(filteredEventItems[index])
-                        Spacer(Modifier.height(8.dp))
-                    }
+                items(
+                    if (errorMessage != null) 1 // this approach allows pull to refresh to still be enabled when error is shown
+                    else filteredEventItems.size
+                ) { index ->
+                    if (errorMessage != null) Text(text = errorMessage, color = Color.Black)
+                    else EventItem(filteredEventItems[index])
+                    Spacer(Modifier.height(4.dp))
                 }
             }
             PullRefreshIndicator(refreshing, state, Modifier.align(Alignment.TopCenter))

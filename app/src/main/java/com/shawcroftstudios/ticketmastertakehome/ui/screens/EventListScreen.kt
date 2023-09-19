@@ -19,7 +19,7 @@ fun EventListScreen(viewModelStoreOwner: ViewModelStoreOwner) {
             viewModel.updateSearchQuery(latestQuery)
         }
         EventList(uiState = viewModel.eventListUiState) {
-            viewModel.fetchEventsForCity(HARDCODED_CITY) // pull to refresh callback
+            viewModel.fetchEventsForCity(HARDCODED_CITY) // 'pull to refresh' callback
         }
     }
 
