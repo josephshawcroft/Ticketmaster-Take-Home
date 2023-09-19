@@ -29,9 +29,8 @@ import androidx.compose.ui.unit.dp
 import com.shawcroftstudios.ticketmastertakehome.ui.viewmodel.EventListUiState
 
 /**
- *     Rather crude 'pull to refresh' implementation- given more time I'd flesh this out so that refresh state
- *     is based on VM loading state. Wanted to have it in anyway as it's nicer UX and a pretty cool
- *     Compose feature
+ *     'Pull to refresh' implementation- refresh state is based on VM loading state.
+ *     Wanted to have it in as it's a nicer UX and a pretty cool Compose feature
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -64,7 +63,7 @@ fun EventList(uiState: State<EventListUiState>, onPullRefresh: () -> Unit) {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
                 items(
-                    if (errorMessage != null) 1 // this approach allows pull to refresh to still be enabled when error is shown
+                    if (errorMessage != null) 1 // this approach allows pull to refresh to still be enabled when an error is shown
                     else filteredEventItems.size
                 ) { index ->
                     if (errorMessage != null) Text(text = errorMessage, color = Color.Black)
