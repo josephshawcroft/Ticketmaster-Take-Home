@@ -28,4 +28,5 @@ fun EventListScreen(viewModelStoreOwner: ViewModelStoreOwner) {
     }
 }
 
+// TODO mention testing multiple hardcoded cities
 private const val HARDCODED_CITY = "Nottingham"
