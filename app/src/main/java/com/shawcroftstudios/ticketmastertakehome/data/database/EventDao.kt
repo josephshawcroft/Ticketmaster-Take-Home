@@ -15,11 +15,11 @@ interface EventDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(events: List<Event>)
 
-    @Query("SELECT * FROM events")
-    suspend fun getAllEvents(): List<Event>
-
     @Query("SELECT * FROM events WHERE city = :city")
     suspend fun getEventsForCity(city: String): List<Event>
+
+    @Query("DELETE FROM events WHERE city = :city")
+    suspend fun deleteEventsForCity(city: String)
 
     @Query("DELETE FROM events")
     suspend fun deleteAllEvents()

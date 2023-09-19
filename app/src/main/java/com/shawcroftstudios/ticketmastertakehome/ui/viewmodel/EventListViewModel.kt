@@ -70,7 +70,7 @@ class EventListViewModel @Inject constructor(
              if (query.isBlank()) {
                 events
             } else {
-                events.filter { it.name.contains(query) }
+                events.filter { it.name.contains(query, ignoreCase = true) }
             }
         }
 
