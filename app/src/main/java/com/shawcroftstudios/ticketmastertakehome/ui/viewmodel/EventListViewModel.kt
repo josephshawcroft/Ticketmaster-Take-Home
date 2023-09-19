@@ -15,6 +15,7 @@ import com.shawcroftstudios.ticketmastertakehome.utils.DispatcherProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,7 +47,7 @@ class EventListViewModel @Inject constructor(
                     is DataLoadingResult.Loading -> EventListUiState(isLoading = true)
                     is DataLoadingResult.Error -> EventListUiState(
                         isLoading = false,
-                        errorMessageResourceId = handleException(result.exception)
+                        errorMessageResourceId = extractErrorResource(result.exception)
                     )
                 }
                 _eventListUiState.value = state
@@ -57,26 +58,27 @@ class EventListViewModel @Inject constructor(
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
-        updateFilteredEvents(query)
+        viewModelScope.launch { updateFilteredEvents(query) }
     }
 
-    private fun updateFilteredEvents(query: String) {
-        viewModelScope.launch(dispatcher.io) {
-            val eventListUiState = _eventListUiState.value
+    private suspend fun updateFilteredEvents(query: String) {
+        val eventListUiState = _eventListUiState.value
+
+        val filteredEvents = withContext(dispatcher.default) {
             val events = eventListUiState.eventItems
 
-            val filteredEvents = if (query.isBlank()) {
+             if (query.isBlank()) {
                 events
             } else {
                 events.filter { it.name.contains(query) }
             }
-
-            _eventListUiState.value = eventListUiState.copy(filteredEventItems = filteredEvents)
         }
+
+        _eventListUiState.value = eventListUiState.copy(filteredEventItems = filteredEvents)
     }
 
     @StringRes
-    private fun handleException(throwable: Throwable): Int =
+    private fun extractErrorResource(throwable: Throwable): Int =
         when (throwable) {
             is NoAvailableEventsException -> R.string.no_events_available_to_show_at_this_time
             is NoInternetException -> R.string.no_internet_connection
