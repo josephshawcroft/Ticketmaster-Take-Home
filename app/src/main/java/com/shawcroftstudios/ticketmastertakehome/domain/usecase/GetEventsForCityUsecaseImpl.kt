@@ -23,24 +23,23 @@ class GetEventsForCityUsecaseImpl @Inject constructor(
         val remoteData: Flow<DataLoadingResult<List<Event>>> =
             remoteRepository.fetchEventsForCity(cityName)
 
-        var hasRemoteUpdated = false
+        var hasUpdatedLocalDb = false
 
-        // TODO- would tidy this up more if given more time
         return combine(localData, remoteData) { localResult, remoteResult ->
-            if (remoteResult is DataLoadingResult.Success) {
-                if (remoteResult.data.isEmpty()) {
-                    DataLoadingResult.Error(NoAvailableEventsException())
-                } else {
-                    if (!hasRemoteUpdated) {
+            when {
+                remoteResult is DataLoadingResult.Success && remoteResult.data.isNotEmpty() -> {
+                    if (!hasUpdatedLocalDb) {
                         localRepository.insertEvents(remoteResult.data)
-                        hasRemoteUpdated = true
+                        hasUpdatedLocalDb = true
                     }
                     remoteResult
                 }
-            } else if (localResult is DataLoadingResult.Error && remoteResult is DataLoadingResult.Loading) {
-                DataLoadingResult.Loading // if local DB has errored but remote is still loading, still treat as loading
-            } else {
-                localResult // otherwise fallback to local DB
+
+                remoteResult is DataLoadingResult.Success -> DataLoadingResult.Error(
+                    NoAvailableEventsException() // ie remote data is empty
+                )
+                remoteResult is DataLoadingResult.Loading && localResult is DataLoadingResult.Error -> remoteResult // Use local data if it's available
+                else -> localResult
             }
         }.flowOn(dispatcherProvider.io)
     }

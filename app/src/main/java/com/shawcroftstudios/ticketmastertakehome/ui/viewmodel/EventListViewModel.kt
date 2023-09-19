@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.shawcroftstudios.ticketmastertakehome.R
 import com.shawcroftstudios.ticketmastertakehome.data.DataLoadingResult
 import com.shawcroftstudios.ticketmastertakehome.data.exception.NoAvailableEventsException
-import com.shawcroftstudios.ticketmastertakehome.data.exception.NoInternetException
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
 import com.shawcroftstudios.ticketmastertakehome.domain.usecase.GetEventsForCityUsecase
 import com.shawcroftstudios.ticketmastertakehome.utils.DispatcherProvider
@@ -67,7 +66,7 @@ class EventListViewModel @Inject constructor(
         val filteredEvents = withContext(dispatcher.default) {
             val events = eventListUiState.eventItems
 
-             if (query.isBlank()) {
+            if (query.isBlank()) {
                 events
             } else {
                 events.filter { it.name.contains(query, ignoreCase = true) }
@@ -79,11 +78,10 @@ class EventListViewModel @Inject constructor(
 
     @StringRes
     private fun extractErrorResource(throwable: Throwable): Int =
-        when (throwable) {
-            is NoAvailableEventsException -> R.string.no_events_available_to_show_at_this_time
-            is NoInternetException -> R.string.no_internet_connection
-            else -> R.string.unknown_error_has_occurred
-        }
+        if (throwable is NoAvailableEventsException) {
+            R.string.no_events_available_to_show_at_this_time
+        } else R.string.unknown_error_has_occurred
+
 }
 
 data class EventListUiState(
