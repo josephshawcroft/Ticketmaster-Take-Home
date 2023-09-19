@@ -13,7 +13,7 @@ fun AppNavigation(owner: ViewModelStoreOwner, windowSizeClass: WindowSizeClass) 
     val navController = rememberNavController()
     NavHost(navController, startDestination = Routes.EventList.route) {
         composable(route = Routes.EventList.route) {
-            EventListScreen(owner, windowSizeClass)
+            EventListScreen(owner)
         }
     }
 }

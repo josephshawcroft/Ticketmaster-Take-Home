@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -29,12 +28,14 @@ import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.shawcroftstudios.ticketmastertakehome.R
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchBar(modifier: Modifier = Modifier, onQueryChange: (String) -> Unit = { }) {
 
@@ -57,11 +58,11 @@ fun SearchBar(modifier: Modifier = Modifier, onQueryChange: (String) -> Unit = {
                     leadingIcon = {
                         Icon(
                             Icons.Filled.Search,
-                            contentDescription = "Search Icon"
+                            contentDescription = stringResource(R.string.search_icon)
                         )
                     },
                     placeholder = {
-                        Text(text = "Search for event", color = LightGray, fontSize = 12.sp)
+                        Text(text = stringResource(R.string.search_for_event), color = LightGray, fontSize = 12.sp)
                     },
                     singleLine = true,
                     value = query,
@@ -70,7 +71,7 @@ fun SearchBar(modifier: Modifier = Modifier, onQueryChange: (String) -> Unit = {
                         onQueryChange(it)
                     },
                     modifier = Modifier
-                        .testTag("TEXT_FIELD_TEXT_TAG")
+                        .testTag(SEARCH_BAR_TEXT_FIELD_TAG)
                         .fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(
@@ -82,8 +83,9 @@ fun SearchBar(modifier: Modifier = Modifier, onQueryChange: (String) -> Unit = {
                     trailingIcon = {
                         if (query.isNotEmpty()) {
                             Icon(Icons.Default.Clear,
-                                contentDescription = "clear text",
+                                contentDescription = stringResource(R.string.clear_text),
                                 modifier = Modifier
+                                    .testTag(SEARCH_BAR_TEXT_FIELD_TRAILING_ICON_TAG)
                                     .clickable {
                                         query = ""
                                         onQueryChange("")
@@ -98,6 +100,9 @@ fun SearchBar(modifier: Modifier = Modifier, onQueryChange: (String) -> Unit = {
         }
     }
 }
+
+const val SEARCH_BAR_TEXT_FIELD_TAG = "SEARCH_BAR_TEXT_FIELD_TAG"
+const val SEARCH_BAR_TEXT_FIELD_TRAILING_ICON_TAG = "SEARCH_BAR_TEXT_FIELD_TRAILING_ICON_TAG"
 
 @Preview
 @Composable

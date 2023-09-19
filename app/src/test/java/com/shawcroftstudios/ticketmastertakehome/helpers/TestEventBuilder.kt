@@ -1,6 +1,7 @@
 package com.shawcroftstudios.ticketmastertakehome.helpers
 
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
+import com.shawcroftstudios.ticketmastertakehome.domain.model.Images
 
 class TestEventBuilder {
     companion object {
@@ -11,7 +12,7 @@ class TestEventBuilder {
             venueName: String? = DEFAULT_VENUE_NAME,
             imageUrl: String? = DEFAULT_IMAGE_URL
         ): Event {
-            return Event(id, name, city, venueName, imageUrl)
+            return Event(id, name, city, venueName, Images(imageUrl, imageUrl))
         }
 
         private const val DEFAULT_ID = "testId"

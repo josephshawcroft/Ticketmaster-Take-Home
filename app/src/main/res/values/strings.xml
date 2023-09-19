@@ -6,4 +6,7 @@
     <string name="unknown_error_has_occurred">An unknown error has occurred. Please try again later</string>
 
     <string name="venue_tba">Venue TBA</string>
+    <string name="search_for_event">Search for event</string>
+    <string name="search_icon">Search Icon</string>
+    <string name="clear_text">clear text</string>
 </resources>

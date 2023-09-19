@@ -43,6 +43,7 @@ class EventListViewModel @Inject constructor(
                     is DataResult.Success -> {
                         EventListUiState(isLoading = false, eventItems = result.data)
                     }
+
                     is DataResult.Loading -> EventListUiState(isLoading = true)
                     is DataResult.Error -> EventListUiState(
                         isLoading = false,

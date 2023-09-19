@@ -1,7 +1,6 @@
 package com.shawcroftstudios.ticketmastertakehome.ui.screens
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -11,7 +10,7 @@ import com.shawcroftstudios.ticketmastertakehome.ui.composable.SearchBar
 import com.shawcroftstudios.ticketmastertakehome.ui.viewmodel.EventListViewModel
 
 @Composable
-fun EventListScreen(viewModelStoreOwner: ViewModelStoreOwner, windowSizeClass: WindowSizeClass) {
+fun EventListScreen(viewModelStoreOwner: ViewModelStoreOwner) {
 
     val viewModel = hiltViewModel<EventListViewModel>(viewModelStoreOwner)
 
@@ -19,7 +18,7 @@ fun EventListScreen(viewModelStoreOwner: ViewModelStoreOwner, windowSizeClass: W
         SearchBar { latestQuery ->
             viewModel.updateSearchQuery(latestQuery)
         }
-        EventList(uiState = viewModel.eventListUiState, windowSizeClass = windowSizeClass) {
+        EventList(uiState = viewModel.eventListUiState) {
             viewModel.fetchEventsForCity(HARDCODED_CITY) // 'pull to refresh' callback
         }
     }
