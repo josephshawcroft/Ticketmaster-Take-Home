@@ -1,6 +1,6 @@
 package com.shawcroftstudios.ticketmastertakehome.data.repository
 
-import com.shawcroftstudios.ticketmastertakehome.data.DataLoadingResult
+import com.shawcroftstudios.ticketmastertakehome.data.DataResult
 import com.shawcroftstudios.ticketmastertakehome.data.database.EventDao
 import com.shawcroftstudios.ticketmastertakehome.data.exception.NoAvailableEventsException
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
@@ -11,12 +11,12 @@ import javax.inject.Inject
 class LocalEventListRepositoryImpl @Inject constructor(
     private val eventDao: EventDao,
 ) : LocalEventListRepository {
-    override fun fetchEventsForCity(city: String): Flow<DataLoadingResult<List<Event>>> = flow {
-        emit(DataLoadingResult.Loading)
+    override fun fetchEventsForCity(city: String): Flow<DataResult<List<Event>>> = flow {
+        emit(DataResult.Loading)
         val localEvents = eventDao.getEventsForCity(city)
         if (localEvents.isNotEmpty()) {
-            emit(DataLoadingResult.Success(localEvents))
-        } else emit(DataLoadingResult.Error(NoAvailableEventsException()))
+            emit(DataResult.Success(localEvents))
+        } else emit(DataResult.Error(NoAvailableEventsException()))
     }
 
     override suspend fun insertEvents(events: List<Event>) {

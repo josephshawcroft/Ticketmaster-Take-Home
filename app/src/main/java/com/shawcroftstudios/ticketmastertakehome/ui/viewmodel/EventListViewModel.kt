@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shawcroftstudios.ticketmastertakehome.R
-import com.shawcroftstudios.ticketmastertakehome.data.DataLoadingResult
+import com.shawcroftstudios.ticketmastertakehome.data.DataResult
 import com.shawcroftstudios.ticketmastertakehome.data.exception.NoAvailableEventsException
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
 import com.shawcroftstudios.ticketmastertakehome.domain.usecase.GetEventsForCityUsecase
@@ -40,17 +40,17 @@ class EventListViewModel @Inject constructor(
 
             useCaseFlow.collectLatest { result ->
                 val state = when (result) {
-                    is DataLoadingResult.Success -> {
+                    is DataResult.Success -> {
                         EventListUiState(isLoading = false, eventItems = result.data)
                     }
-                    is DataLoadingResult.Loading -> EventListUiState(isLoading = true)
-                    is DataLoadingResult.Error -> EventListUiState(
+                    is DataResult.Loading -> EventListUiState(isLoading = true)
+                    is DataResult.Error -> EventListUiState(
                         isLoading = false,
                         errorMessageResourceId = extractErrorResource(result.exception)
                     )
                 }
                 _eventListUiState.value = state
-                if (result is DataLoadingResult.Success) updateFilteredEvents(_searchQuery.value)
+                if (result is DataResult.Success) updateFilteredEvents(_searchQuery.value)
             }
         }
     }

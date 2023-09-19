@@ -1,7 +1,7 @@
 package com.shawcroftstudios.ticketmastertakehome.data.repository
 
 import app.cash.turbine.test
-import com.shawcroftstudios.ticketmastertakehome.data.DataLoadingResult
+import com.shawcroftstudios.ticketmastertakehome.data.DataResult
 import com.shawcroftstudios.ticketmastertakehome.data.exception.NoAvailableEventsException
 import com.shawcroftstudios.ticketmastertakehome.data.mapper.EventMapper
 import com.shawcroftstudios.ticketmastertakehome.data.network.EventApi
@@ -49,8 +49,8 @@ class RemoteEventListRepositoryImplTest {
             every { eventMapper.mapToDomain(any()) } returns testEvents
 
             sut.fetchEventsForCity(cityName).test {
-                assertEquals(DataLoadingResult.Loading, awaitItem())
-                assertEquals(DataLoadingResult.Success(testEvents), awaitItem())
+                assertEquals(DataResult.Loading, awaitItem())
+                assertEquals(DataResult.Success(testEvents), awaitItem())
                 awaitComplete()
             }
 
@@ -69,15 +69,15 @@ class RemoteEventListRepositoryImplTest {
             every { eventMapper.mapToDomain(any()) } returns emptyList()
 
             sut.fetchEventsForCity(cityName).test {
-                assertEquals(DataLoadingResult.Loading, awaitItem())
+                assertEquals(DataResult.Loading, awaitItem())
                 val errorItem = awaitItem()
 
                 assertTrue(
                     "$errorItem is not of type DataLoadingResult.Error",
-                    errorItem is DataLoadingResult.Error
+                    errorItem is DataResult.Error
                 )
 
-                val exception = (errorItem as? DataLoadingResult.Error)?.exception
+                val exception = (errorItem as? DataResult.Error)?.exception
                 assertTrue(
                     "$exception is not NoAvailableEventsException",
                     exception is NoAvailableEventsException
@@ -99,8 +99,8 @@ class RemoteEventListRepositoryImplTest {
             coEvery { eventApi.fetchEventsForCity(cityName) } returns unsuccessfulMockResponse
 
             sut.fetchEventsForCity(cityName).test {
-                assertEquals(DataLoadingResult.Loading, awaitItem())
-                assertEquals(DataLoadingResult.Error(exception), awaitItem())
+                assertEquals(DataResult.Loading, awaitItem())
+                assertEquals(DataResult.Error(exception), awaitItem())
                 awaitComplete()
             }
 

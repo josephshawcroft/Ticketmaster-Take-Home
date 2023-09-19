@@ -1,7 +1,7 @@
 package com.shawcroftstudios.ticketmastertakehome.data.repository
 
 import app.cash.turbine.test
-import com.shawcroftstudios.ticketmastertakehome.data.DataLoadingResult
+import com.shawcroftstudios.ticketmastertakehome.data.DataResult
 import com.shawcroftstudios.ticketmastertakehome.data.database.EventDao
 import com.shawcroftstudios.ticketmastertakehome.data.exception.NoAvailableEventsException
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
@@ -41,8 +41,8 @@ class LocalEventListRepositoryImplTest {
 
 
             sut.fetchEventsForCity(cityName).test {
-                assertEquals(DataLoadingResult.Loading, awaitItem()) // always loads first
-                assertEquals(DataLoadingResult.Success(testEvents), awaitItem())
+                assertEquals(DataResult.Loading, awaitItem()) // always loads first
+                assertEquals(DataResult.Success(testEvents), awaitItem())
                 awaitComplete()
             }
 
@@ -57,15 +57,15 @@ class LocalEventListRepositoryImplTest {
             coEvery { eventDao.getEventsForCity(cityName) } returns emptyList()
 
             sut.fetchEventsForCity(cityName).test {
-                assertEquals(DataLoadingResult.Loading, awaitItem())
+                assertEquals(DataResult.Loading, awaitItem())
 
                 val errorItem = awaitItem()
                 assertTrue(
                     "$errorItem is not of type DataLoadingResult.Error",
-                    errorItem is DataLoadingResult.Error
+                    errorItem is DataResult.Error
                 )
 
-                val exception = (errorItem as? DataLoadingResult.Error)?.exception
+                val exception = (errorItem as? DataResult.Error)?.exception
                 assertTrue(
                     "$exception is not NoAvailableEventsException",
                     exception is NoAvailableEventsException

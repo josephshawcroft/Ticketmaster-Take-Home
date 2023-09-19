@@ -9,5 +9,10 @@ data class Event(
     val name: String,
     val city: String?,
     val venueName: String?,
-    val imageUrl: String?,
+    val imageUrl: Images?,
+)
+
+data class Images(
+    val phoneImageUrl: String?,
+    val tabletImageUrl: String?
 )

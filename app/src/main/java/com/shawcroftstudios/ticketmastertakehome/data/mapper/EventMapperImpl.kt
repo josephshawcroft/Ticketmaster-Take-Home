@@ -3,6 +3,7 @@ package com.shawcroftstudios.ticketmastertakehome.data.mapper
 import com.shawcroftstudios.ticketmastertakehome.data.response.EventsResponse
 import com.shawcroftstudios.ticketmastertakehome.data.response.Image
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
+import com.shawcroftstudios.ticketmastertakehome.domain.model.Images
 import javax.inject.Inject
 
 class EventMapperImpl @Inject constructor() : EventMapper {
@@ -24,8 +25,18 @@ class EventMapperImpl @Inject constructor() : EventMapper {
         }
     }
 
-    private fun determineImageUrlToUse(images: List<Image>): String? {
-        val image = images.filter { it.ratio == "3_2" }.minByOrNull { it.height ?: Int.MAX_VALUE }
-        return image?.url
+    private fun determineImageUrlToUse(images: List<Image>): Images {
+        val image = images.filter { it.ratio == DESIRED_ASPECT_RATIO }
+        val phoneImage = image.minByOrNull { it.height ?: Int.MAX_VALUE }?.url
+        val tabletImage = image.maxByOrNull { it.height ?: Int.MIN_VALUE }?.url
+
+        return Images(
+            phoneImage,
+            tabletImage
+        )
+    }
+
+    private companion object {
+        private const val DESIRED_ASPECT_RATIO = "3_2"
     }
 }

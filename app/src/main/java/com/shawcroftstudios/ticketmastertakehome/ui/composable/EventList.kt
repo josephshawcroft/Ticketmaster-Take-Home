@@ -14,6 +14,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -34,7 +35,10 @@ import com.shawcroftstudios.ticketmastertakehome.ui.viewmodel.EventListUiState
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun EventList(uiState: State<EventListUiState>, modifier: Modifier = Modifier, onPullRefresh: () -> Unit) {
+fun EventList(uiState: State<EventListUiState>,
+              windowSizeClass: WindowSizeClass,
+              modifier: Modifier = Modifier,
+              onPullRefresh: () -> Unit) {
     val density = LocalDensity.current
     val filteredEventItems = uiState.value.filteredEventItems
 
@@ -67,7 +71,7 @@ fun EventList(uiState: State<EventListUiState>, modifier: Modifier = Modifier, o
                     else filteredEventItems.size
                 ) { index ->
                     if (errorMessage != null) Text(text = errorMessage, color = Color.Black)
-                    else EventItem(filteredEventItems[index])
+                    else EventItem(filteredEventItems[index], windowSizeClass)
                     Spacer(Modifier.height(4.dp))
                 }
             }

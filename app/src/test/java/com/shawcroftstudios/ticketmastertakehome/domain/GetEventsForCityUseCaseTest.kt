@@ -1,7 +1,7 @@
 package com.shawcroftstudios.ticketmastertakehome.domain
 
 import app.cash.turbine.test
-import com.shawcroftstudios.ticketmastertakehome.data.DataLoadingResult
+import com.shawcroftstudios.ticketmastertakehome.data.DataResult
 import com.shawcroftstudios.ticketmastertakehome.data.exception.NoAvailableEventsException
 import com.shawcroftstudios.ticketmastertakehome.data.repository.LocalEventListRepository
 import com.shawcroftstudios.ticketmastertakehome.data.repository.RemoteEventListRepository
@@ -54,10 +54,10 @@ class GetEventsForCityUseCaseTest {
             val remoteTestEvents =
                 listOf(TestEventBuilder.createEvent("remoteId1", city = cityName))
 
-            val expected = DataLoadingResult.Success(remoteTestEvents)
+            val expected = DataResult.Success(remoteTestEvents)
 
             every { localRepository.fetchEventsForCity(cityName) } returns flowOf(
-                DataLoadingResult.Success(
+                DataResult.Success(
                     localTestEvents
                 )
             )
@@ -86,12 +86,12 @@ class GetEventsForCityUseCaseTest {
                 emptyList()
 
             every { localRepository.fetchEventsForCity(cityName) } returns flowOf(
-                DataLoadingResult.Success(
+                DataResult.Success(
                     localTestEvents
                 )
             )
             every { remoteRepository.fetchEventsForCity(cityName) } returns flowOf(
-                DataLoadingResult.Success(
+                DataResult.Success(
                     remoteTestEvents
                 )
             )
@@ -100,10 +100,10 @@ class GetEventsForCityUseCaseTest {
                 val errorItem = awaitItem()
                 assertTrue(
                     "$errorItem is not of type DataLoadingResult.Error",
-                    errorItem is DataLoadingResult.Error
+                    errorItem is DataResult.Error
                 )
 
-                val exception = (errorItem as? DataLoadingResult.Error)?.exception
+                val exception = (errorItem as? DataResult.Error)?.exception
                 assertTrue(
                     "$exception is not NoAvailableEventsException",
                     exception is NoAvailableEventsException
@@ -122,15 +122,15 @@ class GetEventsForCityUseCaseTest {
             val remoteTestEvents =
                 listOf(TestEventBuilder.createEvent("remoteId1", city = cityName))
 
-            val expected = DataLoadingResult.Success(remoteTestEvents)
+            val expected = DataResult.Success(remoteTestEvents)
 
             every { localRepository.fetchEventsForCity(cityName) } returns flowOf(
-                DataLoadingResult.Loading,
-                DataLoadingResult.Error(NoAvailableEventsException()),
+                DataResult.Loading,
+                DataResult.Error(NoAvailableEventsException()),
             )
 
             every { remoteRepository.fetchEventsForCity(cityName) } returns flowOf(
-                DataLoadingResult.Success(
+                DataResult.Success(
                     remoteTestEvents
                 )
             )
@@ -156,16 +156,16 @@ class GetEventsForCityUseCaseTest {
                 TestEventBuilder.createEvent("localId2", city = cityName)
             )
 
-            val expected = DataLoadingResult.Success(localTestEvents)
+            val expected = DataResult.Success(localTestEvents)
 
             every { localRepository.fetchEventsForCity(cityName) } returns flowOf(
-                DataLoadingResult.Success(
+                DataResult.Success(
                     localTestEvents
                 )
             )
             every { remoteRepository.fetchEventsForCity(cityName) } returns flowOf(
-                DataLoadingResult.Loading,
-                DataLoadingResult.Error(NoAvailableEventsException())
+                DataResult.Loading,
+                DataResult.Error(NoAvailableEventsException())
             )
 
             sut.execute(cityName).test {
@@ -182,12 +182,12 @@ class GetEventsForCityUseCaseTest {
     fun `given sut, when execute is called with unsuccessful local but remote flow is in loading state, then return loading flow`() =
         runTest {
             val cityName = "TestCity"
-            val expected = DataLoadingResult.Loading
+            val expected = DataResult.Loading
 
             every { localRepository.fetchEventsForCity(cityName) } returns flowOf(
-                DataLoadingResult.Error(NoAvailableEventsException())
+                DataResult.Error(NoAvailableEventsException())
             )
-            every { remoteRepository.fetchEventsForCity(cityName) } returns flowOf(DataLoadingResult.Loading)
+            every { remoteRepository.fetchEventsForCity(cityName) } returns flowOf(DataResult.Loading)
 
             sut.execute(cityName).test {
                 assertEquals(expected, awaitItem())
