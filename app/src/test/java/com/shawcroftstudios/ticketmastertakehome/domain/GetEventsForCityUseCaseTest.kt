@@ -2,7 +2,6 @@ package com.shawcroftstudios.ticketmastertakehome.domain
 
 import app.cash.turbine.test
 import com.shawcroftstudios.ticketmastertakehome.data.DataLoadingResult
-import com.shawcroftstudios.ticketmastertakehome.data.repository.EventListRepository
 import com.shawcroftstudios.ticketmastertakehome.domain.usecase.GetEventsForCityUsecaseImpl
 import com.shawcroftstudios.ticketmastertakehome.helpers.TestEventBuilder
 import com.shawcroftstudios.ticketmastertakehome.utils.DispatcherProvider
