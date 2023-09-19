@@ -30,9 +30,9 @@ import com.shawcroftstudios.ticketmastertakehome.R
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
 
 @Composable
-fun EventItem(event: Event) {
+fun EventItem(event: Event, modifier: Modifier = Modifier) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .testTag("CARD_ITEM_TEXT_TAG")
             .fillMaxWidth()
             .padding(4.dp),

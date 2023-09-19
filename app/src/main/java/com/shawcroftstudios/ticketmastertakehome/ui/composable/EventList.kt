@@ -34,7 +34,7 @@ import com.shawcroftstudios.ticketmastertakehome.ui.viewmodel.EventListUiState
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun EventList(uiState: State<EventListUiState>, onPullRefresh: () -> Unit) {
+fun EventList(uiState: State<EventListUiState>, modifier: Modifier = Modifier, onPullRefresh: () -> Unit) {
     val density = LocalDensity.current
     val filteredEventItems = uiState.value.filteredEventItems
 
@@ -56,7 +56,7 @@ fun EventList(uiState: State<EventListUiState>, onPullRefresh: () -> Unit) {
         )
     ) {
         Box(
-            Modifier.pullRefresh(state)
+            modifier.pullRefresh(state)
         ) {
             LazyColumn(Modifier.fillMaxSize()) {
                 item {
