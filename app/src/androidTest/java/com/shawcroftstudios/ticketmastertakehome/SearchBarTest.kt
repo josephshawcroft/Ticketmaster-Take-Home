@@ -1,6 +1,7 @@
 package com.shawcroftstudios.ticketmastertakehome
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -26,10 +27,15 @@ class SearchBarTest {
         val searchBarTextFieldTag: String = SEARCH_BAR_TEXT_FIELD_TAG
         val searchBarTrailingIconTag: String = SEARCH_BAR_TEXT_FIELD_TRAILING_ICON_TAG
 
+        lateinit var placeholderText: String
+
         val testQuery = "test query"
         var latestQuery = ""
 
         composeTestRule.setContent {
+
+            placeholderText = stringResource(id = R.string.search_for_event)
+
             TicketmasterTakeHomeTheme {
                 SearchBar { latestQuery = it }
             }
@@ -37,6 +43,8 @@ class SearchBarTest {
 
         // search bar trailing icon should not exist until text is entered
         composeTestRule.onNodeWithTag(searchBarTrailingIconTag).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(searchBarTextFieldTag).assert(hasText(placeholderText))
+
 
         // search bar trailing icon should exist after text entry, query should be updated
         composeTestRule.onNodeWithTag(searchBarTextFieldTag).performTextInput(testQuery)
@@ -46,7 +54,7 @@ class SearchBarTest {
 
         // search bar trailing icon should again no longer exist after text clearance, query should be empty
         composeTestRule.onNodeWithTag(searchBarTextFieldTag).performTextClearance()
-        composeTestRule.onNodeWithTag(searchBarTextFieldTag).assert(hasText(""))
+        composeTestRule.onNodeWithTag(searchBarTextFieldTag).assert(hasText(placeholderText))
         composeTestRule.onNodeWithTag(searchBarTrailingIconTag).assertDoesNotExist()
         assertEquals("", latestQuery)
     }

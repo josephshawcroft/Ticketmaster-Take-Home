@@ -1,6 +1,7 @@
 package com.shawcroftstudios.ticketmastertakehome.domain.usecase
 
 import com.shawcroftstudios.ticketmastertakehome.data.DataResult
+import com.shawcroftstudios.ticketmastertakehome.data.DataSource
 import com.shawcroftstudios.ticketmastertakehome.data.exception.NoAvailableEventsException
 import com.shawcroftstudios.ticketmastertakehome.data.repository.LocalEventListRepository
 import com.shawcroftstudios.ticketmastertakehome.data.repository.RemoteEventListRepository
@@ -38,7 +39,22 @@ class GetEventsForCityUsecaseImpl @Inject constructor(
                 remoteResult is DataResult.Success -> DataResult.Error(
                     NoAvailableEventsException() // ie remote data is empty
                 )
-                remoteResult is DataResult.Loading && localResult is DataResult.Error -> remoteResult
+
+                remoteResult is DataResult.Loading && localResult is DataResult.Error -> DataResult.Loading()
+                remoteResult is DataResult.Loading && localResult is DataResult.Success -> DataResult.Loading(
+                    localResult.data,
+                    DataSource.Local
+                )
+
+                remoteResult is DataResult.Error && localResult is DataResult.Success -> DataResult.Success(
+                    localResult.data,
+                    DataSource.LocalFallback
+                )
+
+                remoteResult is DataResult.Error && localResult is DataResult.Error -> DataResult.Error(
+                    NoAvailableEventsException()
+                )
+
                 else -> localResult
             }
         }.flowOn(dispatcherProvider.io)

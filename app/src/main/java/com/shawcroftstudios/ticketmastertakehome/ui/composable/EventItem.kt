@@ -38,7 +38,6 @@ fun EventItem(event: Event, isScreenCompact: Boolean, modifier: Modifier = Modif
 
     Card(
         modifier = modifier
-            .testTag("CARD_ITEM_TEXT_TAG")
             .fillMaxWidth()
             .padding(4.dp),
         elevation = CardDefaults.cardElevation(8.dp),
@@ -68,17 +67,21 @@ fun EventItem(event: Event, isScreenCompact: Boolean, modifier: Modifier = Modif
                     text = event.name,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = 4.dp).testTag(EVENT_ITEM_NAME_TEST_TAG)
                 )
                 Text(
                     text = event.venueName ?: stringResource(R.string.venue_tba),
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 4.dp).testTag(EVENT_ITEM_VENUE_TEST_TAG)
                 )
             }
         }
     }
 }
+
+const val EVENT_ITEM_NAME_TEST_TAG = "EVENT_ITEM_NAME_TEST_TAG"
+const val EVENT_ITEM_VENUE_TEST_TAG = "EVENT_ITEM_VENUE_TEST_TAG"
 
 @Preview
 @Composable

@@ -154,7 +154,7 @@ class GetEventsForCityUseCaseTest {
         }
 
     @Test
-    fun `given sut, when execute is called with successful local and loading then unsuccessful remote flow, then return contents of local flow`() =
+    fun `given sut, when execute is called with successful local and loading then unsuccessful remote flow, then return loading flow with local data then success with fallback data source`() =
         runTest {
             val cityName = "TestCity"
             val localTestEvents = listOf(
@@ -162,7 +162,8 @@ class GetEventsForCityUseCaseTest {
                 TestEventBuilder.createEvent("localId2", city = cityName)
             )
 
-            val expected = DataResult.Success(localTestEvents, DataSource.Local)
+            val expectedFirstItem = DataResult.Loading(localTestEvents, DataSource.Local)
+            val expectedSecondItem = DataResult.Success(localTestEvents, DataSource.LocalFallback)
 
             every { localRepository.fetchEventsForCity(cityName) } returns flowOf(
                 DataResult.Success(
@@ -176,8 +177,14 @@ class GetEventsForCityUseCaseTest {
             )
 
             sut.execute(cityName).test {
-                assertEquals(expected, awaitItem()) // remote is loading, still show local db data
-                assertEquals(expected, awaitItem()) // remote has failed, still show local db data
+                assertEquals(
+                    expectedFirstItem,
+                    awaitItem()
+                ) // remote is loading, still show local db data
+                assertEquals(
+                    expectedSecondItem,
+                    awaitItem()
+                ) // remote has failed, still show local db data
                 awaitComplete()
             }
 
@@ -198,6 +205,40 @@ class GetEventsForCityUseCaseTest {
 
             sut.execute(cityName).test {
                 assertEquals(expected, awaitItem())
+                awaitComplete()
+            }
+
+            coVerify(exactly = 0) { localRepository.insertEvents(any()) }
+            verify(exactly = 1) { dispatcherProvider.io }
+        }
+
+    @Test
+    fun `given sut, when execute is called with unsuccessful local and unsuccessful remote flows, then return NoAvailableEventsException`() =
+        runTest {
+            val cityName = "TestCity"
+
+            every { localRepository.fetchEventsForCity(cityName) } returns flowOf(
+                DataResult.Error(Exception())
+            )
+
+            every { remoteRepository.fetchEventsForCity(cityName) } returns flowOf(
+                DataResult.Error(Exception())
+            )
+
+            sut.execute(cityName).test {
+
+                val errorItem = awaitItem()
+
+                assertTrue(
+                    "$errorItem is not of type DataLoadingResult.Error",
+                    errorItem is DataResult.Error
+                )
+
+                val exception = (errorItem as? DataResult.Error)?.exception
+                assertTrue(
+                    "$exception is not NoAvailableEventsException",
+                    exception is NoAvailableEventsException
+                )
                 awaitComplete()
             }
 
