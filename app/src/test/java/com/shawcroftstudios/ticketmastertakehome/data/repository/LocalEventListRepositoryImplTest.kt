@@ -2,6 +2,7 @@ package com.shawcroftstudios.ticketmastertakehome.data.repository
 
 import app.cash.turbine.test
 import com.shawcroftstudios.ticketmastertakehome.data.DataResult
+import com.shawcroftstudios.ticketmastertakehome.data.DataSource
 import com.shawcroftstudios.ticketmastertakehome.data.database.EventDao
 import com.shawcroftstudios.ticketmastertakehome.data.exception.NoAvailableEventsException
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
@@ -41,8 +42,8 @@ class LocalEventListRepositoryImplTest {
 
 
             sut.fetchEventsForCity(cityName).test {
-                assertEquals(DataResult.Loading, awaitItem()) // always loads first
-                assertEquals(DataResult.Success(testEvents), awaitItem())
+                assertEquals(DataResult.Loading<List<Event>>(), awaitItem()) // always loads first
+                assertEquals(DataResult.Success(testEvents, DataSource.Local), awaitItem())
                 awaitComplete()
             }
 
@@ -57,7 +58,7 @@ class LocalEventListRepositoryImplTest {
             coEvery { eventDao.getEventsForCity(cityName) } returns emptyList()
 
             sut.fetchEventsForCity(cityName).test {
-                assertEquals(DataResult.Loading, awaitItem())
+                assertEquals(DataResult.Loading<List<Event>>(), awaitItem())
 
                 val errorItem = awaitItem()
                 assertTrue(

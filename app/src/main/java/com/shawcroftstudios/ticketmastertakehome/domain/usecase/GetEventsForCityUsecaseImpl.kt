@@ -38,7 +38,7 @@ class GetEventsForCityUsecaseImpl @Inject constructor(
                 remoteResult is DataResult.Success -> DataResult.Error(
                     NoAvailableEventsException() // ie remote data is empty
                 )
-                remoteResult is DataResult.Loading && localResult is DataResult.Error -> remoteResult // Use local data if it's available
+                remoteResult is DataResult.Loading && localResult is DataResult.Error -> remoteResult
                 else -> localResult
             }
         }.flowOn(dispatcherProvider.io)

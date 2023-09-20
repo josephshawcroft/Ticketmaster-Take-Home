@@ -1,6 +1,7 @@
 package com.shawcroftstudios.ticketmastertakehome.data.repository
 
 import com.shawcroftstudios.ticketmastertakehome.data.DataResult
+import com.shawcroftstudios.ticketmastertakehome.data.DataSource
 import com.shawcroftstudios.ticketmastertakehome.data.exception.NoAvailableEventsException
 import com.shawcroftstudios.ticketmastertakehome.data.exception.UnknownException
 import com.shawcroftstudios.ticketmastertakehome.data.mapper.EventMapper
@@ -15,7 +16,7 @@ class RemoteEventListRepositoryImpl @Inject constructor(
     private val eventMapper: EventMapper,
 ) : RemoteEventListRepository {
     override fun fetchEventsForCity(city: String): Flow<DataResult<List<Event>>> = flow {
-        emit(DataResult.Loading)
+        emit(DataResult.Loading())
         val response = eventApi.fetchEventsForCity(city)
         val data = response.getOrNull()
 
@@ -25,7 +26,7 @@ class RemoteEventListRepositoryImpl @Inject constructor(
             if (events.isEmpty()) {
                 emit(DataResult.Error(NoAvailableEventsException()))
             } else {
-                emit(DataResult.Success(events))
+                emit(DataResult.Success(events, DataSource.Remote))
             }
         } else {
             val exception = response.exceptionOrNull() ?: UnknownException()

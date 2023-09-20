@@ -2,6 +2,7 @@ package com.shawcroftstudios.ticketmastertakehome.data.repository
 
 import app.cash.turbine.test
 import com.shawcroftstudios.ticketmastertakehome.data.DataResult
+import com.shawcroftstudios.ticketmastertakehome.data.DataSource
 import com.shawcroftstudios.ticketmastertakehome.data.exception.NoAvailableEventsException
 import com.shawcroftstudios.ticketmastertakehome.data.mapper.EventMapper
 import com.shawcroftstudios.ticketmastertakehome.data.network.EventApi
@@ -49,8 +50,8 @@ class RemoteEventListRepositoryImplTest {
             every { eventMapper.mapToDomain(any()) } returns testEvents
 
             sut.fetchEventsForCity(cityName).test {
-                assertEquals(DataResult.Loading, awaitItem())
-                assertEquals(DataResult.Success(testEvents), awaitItem())
+                assertEquals(DataResult.Loading<List<Event>>(), awaitItem())
+                assertEquals(DataResult.Success(testEvents, DataSource.Remote), awaitItem())
                 awaitComplete()
             }
 
@@ -69,7 +70,7 @@ class RemoteEventListRepositoryImplTest {
             every { eventMapper.mapToDomain(any()) } returns emptyList()
 
             sut.fetchEventsForCity(cityName).test {
-                assertEquals(DataResult.Loading, awaitItem())
+                assertEquals(DataResult.Loading<List<Event>>(), awaitItem())
                 val errorItem = awaitItem()
 
                 assertTrue(
@@ -99,7 +100,7 @@ class RemoteEventListRepositoryImplTest {
             coEvery { eventApi.fetchEventsForCity(cityName) } returns unsuccessfulMockResponse
 
             sut.fetchEventsForCity(cityName).test {
-                assertEquals(DataResult.Loading, awaitItem())
+                assertEquals(DataResult.Loading<List<Event>>(), awaitItem())
                 assertEquals(DataResult.Error(exception), awaitItem())
                 awaitComplete()
             }
