@@ -70,7 +70,7 @@ fun EventList(uiState: State<EventListUiState>,
                     else filteredEventItems.size
                 ) { index ->
                     if (errorMessage != null) Text(text = errorMessage, color = Color.Black)
-                    else EventItem(filteredEventItems[index], isScreenCompact = true) // TODO add this back in when tablet layout is implemented
+                    else EventItem(filteredEventItems[index])
                     Spacer(Modifier.height(4.dp))
                 }
             }

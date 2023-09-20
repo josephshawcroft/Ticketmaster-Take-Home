@@ -37,7 +37,7 @@ import com.shawcroftstudios.ticketmastertakehome.R
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchBar(modifier: Modifier = Modifier, onQueryChange: (String) -> Unit = { }) {
+fun SearchBar(modifier: Modifier = Modifier, onQueryChange: (String) -> Unit) {
 
     var query by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -62,7 +62,11 @@ fun SearchBar(modifier: Modifier = Modifier, onQueryChange: (String) -> Unit = {
                         )
                     },
                     placeholder = {
-                        Text(text = stringResource(R.string.search_for_event), color = LightGray, fontSize = 12.sp)
+                        Text(
+                            text = stringResource(R.string.search_for_event),
+                            color = LightGray,
+                            fontSize = 12.sp
+                        )
                     },
                     singleLine = true,
                     value = query,
@@ -101,11 +105,11 @@ fun SearchBar(modifier: Modifier = Modifier, onQueryChange: (String) -> Unit = {
     }
 }
 
-const val SEARCH_BAR_TEXT_FIELD_TAG = "SEARCH_BAR_TEXT_FIELD_TAG"
-const val SEARCH_BAR_TEXT_FIELD_TRAILING_ICON_TAG = "SEARCH_BAR_TEXT_FIELD_TRAILING_ICON_TAG"
-
 @Preview
 @Composable
 fun SearchBarPreview() {
-    SearchBar()
+    SearchBar {}
 }
+
+const val SEARCH_BAR_TEXT_FIELD_TAG = "SEARCH_BAR_TEXT_FIELD_TAG"
+const val SEARCH_BAR_TEXT_FIELD_TRAILING_ICON_TAG = "SEARCH_BAR_TEXT_FIELD_TRAILING_ICON_TAG"

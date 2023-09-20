@@ -31,7 +31,7 @@ class EventItemTest {
 
         composeTestRule.setContent {
             TicketmasterTakeHomeTheme {
-                EventItem(event = event, true)
+                EventItem(event = event)
             }
         }
 
@@ -50,7 +50,7 @@ class EventItemTest {
             expectedVenue = stringResource(id = R.string.venue_tba)
 
             TicketmasterTakeHomeTheme {
-                EventItem(event = event, true)
+                EventItem(event = event)
             }
         }
 

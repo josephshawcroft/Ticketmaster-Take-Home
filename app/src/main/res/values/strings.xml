@@ -1,12 +1,11 @@
 <resources>
     <string name="app_name">Ticketmaster Take Home</string>
 
-    <string name="date_not_available">Date not available</string>
     <string name="no_events_available_to_show_at_this_time">Cannot retrieve events at this time. Please try again later</string>
     <string name="unknown_error_has_occurred">An unknown error has occurred. Please try again later</string>
 
     <string name="venue_tba">Venue TBA</string>
     <string name="search_for_event">Search for event</string>
     <string name="search_icon">Search Icon</string>
-    <string name="clear_text">clear text</string>
+    <string name="clear_text">Clear text</string>
 </resources>

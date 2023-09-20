@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,9 +31,14 @@ import com.shawcroftstudios.ticketmastertakehome.R
 import com.shawcroftstudios.ticketmastertakehome.domain.model.Event
 
 @Composable
-fun EventItem(event: Event, isScreenCompact: Boolean, modifier: Modifier = Modifier) {
+fun EventItem(event: Event, modifier: Modifier = Modifier) {
 
-    val imageUrl = if (isScreenCompact) {
+    val current = LocalConfiguration.current
+    val width = current.screenWidthDp.dp
+
+    // dp values derived from: https://developer.android.com/guide/topics/large-screens/support-different-screen-sizes
+    // additional note: would tidy this up and abstract this away given more time
+    val imageUrl = if (width >= 600.dp) {
         event.imageUrl?.tabletImageUrl
     } else event.imageUrl?.phoneImageUrl
 
@@ -67,21 +73,22 @@ fun EventItem(event: Event, isScreenCompact: Boolean, modifier: Modifier = Modif
                     text = event.name,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 4.dp).testTag(EVENT_ITEM_NAME_TEST_TAG)
+                    modifier = Modifier
+                        .padding(bottom = 4.dp)
+                        .testTag(EVENT_ITEM_NAME_TEST_TAG)
                 )
                 Text(
                     text = event.venueName ?: stringResource(R.string.venue_tba),
                     fontSize = 14.sp,
                     color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 4.dp).testTag(EVENT_ITEM_VENUE_TEST_TAG)
+                    modifier = Modifier
+                        .padding(bottom = 4.dp)
+                        .testTag(EVENT_ITEM_VENUE_TEST_TAG)
                 )
             }
         }
     }
 }
-
-const val EVENT_ITEM_NAME_TEST_TAG = "EVENT_ITEM_NAME_TEST_TAG"
-const val EVENT_ITEM_VENUE_TEST_TAG = "EVENT_ITEM_VENUE_TEST_TAG"
 
 @Preview
 @Composable
@@ -92,8 +99,7 @@ fun EventItemPreviewAllDataPresent() = EventItem(
         "Nottingham",
         "Motorpoint Arena",
         null
-    ),
-    isScreenCompact = false
+    )
 )
 
 @Preview
@@ -105,6 +111,8 @@ fun EventItemPreviewNoVenueName() = EventItem(
         "Nottingham",
         null,
         null
-    ),
-    isScreenCompact = false,
+    )
 )
+
+const val EVENT_ITEM_NAME_TEST_TAG = "EVENT_ITEM_NAME_TEST_TAG"
+const val EVENT_ITEM_VENUE_TEST_TAG = "EVENT_ITEM_VENUE_TEST_TAG"
